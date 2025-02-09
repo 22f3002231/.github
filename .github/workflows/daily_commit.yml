@@ -1,29 +1,22 @@
 name: Daily Commit
 
 on:
-  # This schedule runs every day at 10:30 UTC (10 and 30 are fixed values)
   schedule:
-    - cron: "10 15 * * *"
-  # This trigger allows manual runs for testing
-  workflow_dispatch:
+    - cron: "30 10 * * *"  # Runs at 10:30 UTC daily
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  update:
+  commit-job:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Create update commit (22f3002231@ds.study.iitm.ac.in)
+      - name: Create Commit (22f3002231@ds.study.iitm.ac.in)
         run: |
-          # Append the current date/time to update.log so there is always something new 
-          echo "Daily commit run at $(date)" >> update.log
-          # Configure git with a default name and your email
-          git config --global user.name "GitHub Actions"
+          echo "Update: $(date)" >> timestamp.log
           git config --global user.email "22f3002231@ds.study.iitm.ac.in"
-          git add update.log
-          # Try to commit the change; if nothing is changed, skip committing
-          git commit -m "Daily update commit at $(date)" || echo "No changes to commit"
-
-      - name: Push changes to repository
-        run: git push
+          git config --global user.name "GitHub Actions"
+          git add timestamp.log
+          git commit -m "Daily commit: $(date -u)" --allow-empty
+          git push
