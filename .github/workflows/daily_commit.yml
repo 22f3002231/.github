@@ -2,8 +2,8 @@ name: Daily Commit
 
 on:
   schedule:
-    - cron: "30 10 * * *"  # Runs at 10:30 UTC daily
-  workflow_dispatch:  # Allows manual triggering
+    - cron: "30 10 * * *"  # Runs daily at 10:30 UTC
+  workflow_dispatch:
 
 jobs:
   commit-job:
@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for git history access
 
       - name: Create Commit (22f3002231@ds.study.iitm.ac.in)
         run: |
@@ -19,4 +21,8 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add timestamp.log
           git commit -m "Daily commit: $(date -u)" --allow-empty
-          git push
+
+      - name: Push changes
+        run: git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Critical authorization fix
